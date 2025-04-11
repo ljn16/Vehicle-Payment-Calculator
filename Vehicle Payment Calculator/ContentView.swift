@@ -38,7 +38,6 @@ struct ContentView: View {
         NavigationView {
             ZStack {
                 
-                
                 // MARK: - Background
                 LinearGradient(
                     gradient: Gradient(colors:
@@ -52,32 +51,13 @@ struct ContentView: View {
                 .ignoresSafeArea()
 
                 ScrollView {
+                    
                     VStack(spacing: 10) {
-//                        VStack (spacing:-15) {
-//                            Text("Vehicle Payment Calculator")
-//                                .font(.title)
-//    //                            .bold()
-//                            // MARK: - Advanced
-//                            DisclosureGroup("Advanced", isExpanded: $advancedSettingsExpanded) {
-//                                VStack(spacing: 12) {
-//                                    iOSStyledSlider(value: $serviceContractCost, range: 0...5000, step: 100, label: "Service Contract Cost")
-//                                    iOSStyledSlider(value: $gapCost, range: 0...5000, step: 100, label: "GAP Cost")
-//                                    iOSStyledSlider(value: $stateTaxRate, range: 0...20, step: 0.125, label: "State Tax Rate")
-//                                    iOSStyledSlider(value: $titleLicenseCost, range: 0...2000, step: 50, label: "Title & License")
-//                                }
-//                            }
-//                            .padding()
-//
-//                            
-//                            
-//
-//                        }
-                        Text("Vehicle Payment Calculator")
-                            .font(.title)
-//                            .bold()
-//                        
-//
+//                        Text("Vehicle Payment Calculator")
+//                            .font(.title)
+
                         VStack(spacing: -15){
+                            
                             // MARK: - Advanced
                             DisclosureGroup("Advanced", isExpanded: $advancedSettingsExpanded) {
                                 VStack(spacing: 12) {
@@ -88,7 +68,6 @@ struct ContentView: View {
                                 }
                             }
                             .padding()
-                            
                             
                             // MARK: - Table
                             PaymentTableView(
@@ -107,40 +86,47 @@ struct ContentView: View {
                         Spacer()
                         Spacer()
 
-
-                        
                     // MARK: - Sliders
-                        // Budget Slider
-                        HStack {
-                            Spacer()
-                            iOSStyledSlider(value: $budget, range: 0...1000, step: 10, label: "Monthly Budget")
-                                .frame(maxWidth: 250)
-                            Spacer()
-                        }
-                        Spacer()
 
-                        
                         
                         // MARK: - (-)
-                        VStack{
-                            // Red Sliders
-                            iOSStyledSlider(value: $carPrice, range: 0...100000, step: 100, label: "Vehicle Price", fillColor: .red)
-                            iOSStyledSlider(value: $accessories, range: 0...10000, step: 100, label: "Accessories", fillColor: .red)
-                            
-                            // Toggles
-                            HStack {
-                                Toggle("Service Contract", isOn: $serviceContract).padding(.horizontal)
-                                    .tint(Color.red)
-                                    .shadow(color: Color.red.opacity(0.5), radius: 20, x: 0, y: 4)
+                        ZStack {
+                            VStack {
+                                iOSStyledSlider(value: $carPrice, range: 0...100000, step: 100, label: "Vehicle Price", fillColor: .red)
+                                iOSStyledSlider(value: $accessories, range: 0...10000, step: 100, label: "Accessories", fillColor: .red)
 
-                                Toggle("GAP", isOn: $gap).padding(.horizontal)
-                                    .tint(Color.red)
-                                    .shadow(color: Color.red.opacity(0.5), radius: 20, x: 0, y: 4)
+                                // Toggles
+                                HStack {
+                                    Toggle("Service Contract", isOn: $serviceContract)
+                                        .padding(.horizontal)
+                                        .tint(Color.red)
+                                        .shadow(color: Color.red.opacity(0.5), radius: 20, x: 0, y: 4)
 
+                                    Toggle("GAP", isOn: $gap)
+                                        .padding(.horizontal)
+                                        .tint(Color.red)
+                                        .shadow(color: Color.red.opacity(0.5), radius: 20, x: 0, y: 4)
+                                }
+                                .shadow(color: Color.red.opacity(0.5), radius: 20, x: 0, y: 4)
                             }
+                            .padding(6)
+                            .cornerRadius(12)
                             .shadow(color: Color.red.opacity(0.5), radius: 20, x: 0, y: 4)
 
-                            
+                            // Combined
+                            Capsule()
+                                .fill(Color.red.opacity(0.5))
+                                .frame(width: 85, height: 25)
+                                .overlay(
+                                    Text("+  \(Int(carPrice + accessories).formatted(.number.grouping(.automatic)))")
+                                        .foregroundColor(.white)
+                                        .font(.caption)
+                                        .opacity(0.8)
+
+                                )
+                                .offset(y: -27) // Adjust based on visual alignment
+                                .shadow(radius: 5)
+
                         }
                         .padding(6)
 //                        .background(Color.red.opacity(0.01))
@@ -151,22 +137,75 @@ struct ContentView: View {
                         .cornerRadius(12)
                         .shadow(color: Color.red.opacity(0.5), radius: 20, x: 0, y: 4)
 
-                        
                         // MARK: - (+)
                         // Green Sliders
-                        VStack{
-                            iOSStyledSlider(value: $cashDown, range: 0...20000, step: 100, label: "Cash Down", fillColor: .green)
-                            iOSStyledSlider(value: $tradeIn, range: 0...50000, step: 100, label: "Trade-In", fillColor: .green)
+                        ZStack{
+                            VStack{
+                                iOSStyledSlider(value: $cashDown, range: 0...20000, step: 100, label: "Cash Down", fillColor: .green)
+                                iOSStyledSlider(value: $tradeIn, range: 0...50000, step: 100, label: "Trade-In", fillColor: .green)
+                            }
+                            .padding(6)
+    //                        .background(Color.green.opacity(0.01))
+    //                        .overlay(
+    //                            RoundedRectangle(cornerRadius: 12)
+    //                                .stroke(Color.red.opacity(0.2), lineWidth: 1)
+    //                        )
+                            .cornerRadius(12)
+                            .shadow(color: Color.green.opacity(0.5), radius: 20, x: 0, y: 4)
+                            
+                            // Combined value
+                            Capsule()
+                                .fill(Color.green.opacity(0.2))
+                                .frame(width: 80, height: 25)
+                                .overlay(
+                                    Text("-  \((cashDown + tradeIn).formatted(.number.grouping(.automatic)))")
+                                        .foregroundColor(.white)
+                                        .font(.caption)
+                                        .opacity(0.8)
+                                    
+                                )
+                                .offset(y: 0) // Slight overlap
+                                .shadow(radius: 5)
                         }
-                        .padding(6)
-//                        .background(Color.green.opacity(0.01))
-//                        .overlay(
-//                            RoundedRectangle(cornerRadius: 12)
-//                                .stroke(Color.red.opacity(0.2), lineWidth: 1)
-//                        )
-                        .cornerRadius(12)
-                        .shadow(color: Color.green.opacity(0.5), radius: 20, x: 0, y: 4)
+                    }
+                    
+                    // Budget Slider
+                    Spacer()
+                    Spacer()
+                    Spacer()
+                    Spacer()
+                    Spacer()
+
+                    HStack {
+                        Spacer()
                         
+                        VStack(alignment: .center, spacing: 15) {
+                            // Centered value capsule
+                            Text(budget.formatted(.currency(code: "USD").precision(.fractionLength(0))))
+                                .font(.title3)
+                                .fontWeight(.bold)
+                                .foregroundColor(.white)
+                                .padding(.horizontal, 12)
+                                .padding(.vertical, 6)
+                                .background(Color.blue)
+                                .clipShape(Capsule())
+
+                            // Slider
+                            Slider(value: $budget, in: 0...1000, step: 10)
+                                .accentColor(.blue)
+                                .frame(height: 22)
+                                .shadow(color: .blue.opacity(0.5), radius: 10)
+
+                            // Centered label
+                            Text("Monthly Budget")
+                                .font(.caption)
+                                .foregroundColor(.white.opacity(0.8))
+                                .frame(maxWidth: .infinity, alignment: .center)
+
+                        }
+                        .frame(maxWidth: 250)
+                        
+                        Spacer()
                     }
                 }
             }

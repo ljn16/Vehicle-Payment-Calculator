@@ -14,16 +14,35 @@ struct PaymentTableView: View {
     let termOptions: [Int]
     let cashDownValue: Double
     let monthlyBudget: Double
+    
     @Binding var termFinanceTaxRates: [Int: Double]
 
     @State private var editingTerm: Int? = nil
     @State private var selectedPayment: PaymentDetail? = nil
     @State private var showBreakdown = false
+    
+    @State private var isExpanded = true
+
 
     var dynamicCashDownOptions: [Double] {
-        let lower = max(0, cashDownValue - 1000)
         let middle = cashDownValue
-        let upper = cashDownValue + 1000
+        let (lowerOffset, upperOffset): (Double, Double)
+
+        switch cashDownValue {
+        case ...10_000:
+            lowerOffset = 1_000
+            upperOffset = 1_000
+        case ...20_000:
+            lowerOffset = 2_000
+            upperOffset = 2_000
+        default:
+            lowerOffset = 5_000
+            upperOffset = 5_000
+        }
+
+        let lower = max(0, middle - lowerOffset)
+        let upper = middle + upperOffset
+
         return [lower, middle, upper]
     }
 
@@ -88,10 +107,57 @@ struct PaymentTableView: View {
 
                 VStack(alignment: .leading, spacing: 12) {
                     Text("• Term: \(payment.term) months")
-                    Text("• Cash Down: \(formatCurrency(payment.cashDown))")
-                    Text("• Total Before Tax: \(formatCurrency(payment.total))")
-                    Text("• Tax Rate: \(payment.taxRate, specifier: "%.2f")%")
-                    Text("• Finance Rate: \(payment.financeRate, specifier: "%.2f")%")
+//                    Spacer()
+                    Text("• Factors •")
+                        .frame(maxWidth: .infinity, alignment: .center).foregroundStyle(.secondary)
+                    VStack(alignment: .leading, spacing: 4) {
+                        // Header (clickable)
+                        Button(action: {
+                            withAnimation {
+                                isExpanded.toggle()
+                            }
+                        }) {
+                            Text(isExpanded ? "+ " : "+ ")
+                                .foregroundColor(.red)
+                            + Text("Base Total: ")
+                            + Text("\(formatCurrency(baseTotal))").foregroundStyle(.red)
+                        }
+                        .buttonStyle(PlainButtonStyle()) // Removes default button styling
+
+                        // Expanded content
+                        if isExpanded {
+                            VStack(alignment: .leading, spacing: 2) {
+                                Text("includes: vehicle price, accessories, warrenties, license/registration").foregroundStyle(.secondary)
+//                                if serviceContract {
+//                                    Text("• Service Contract: \(formatCurrency(serviceContractCost))")
+//                                }
+//                                if gap {
+//                                    Text("• GAP Insurance: \(formatCurrency(gapCost))")
+//                                }
+                            }
+                            .font(.caption)
+                            .padding(.leading, 20)
+                        }
+                    }
+//                    Text("+ ").foregroundColor(.red) + Text("Base Total: \(formatCurrency(baseTotal))
+                    
+                    Text("- ").foregroundColor(.green)
+                    + Text("Cash Down: ")
+                    + Text("\(formatCurrency(payment.cashDown))").foregroundStyle(.green)
+                    Text("- ").foregroundColor(.green)
+                    + Text("Trade-In Value: ")
+                    + Text("\(formatCurrency(tradeIn))").foregroundStyle(.green)
+                    Text("• Total Amount Financed: \(formatCurrency(baseTotal - tradeIn - payment.cashDown))")
+//                    Spacer()
+                    Text("• Tax •")
+                        .frame(maxWidth: .infinity, alignment: .center).foregroundStyle(.secondary)
+                    Text("× ").foregroundColor(.red)
+                    + Text("State Tax Rate (MN): \(payment.taxRate, specifier: "%.2f")%")
+                    Text("× ").foregroundColor(.red)
+                    + Text("Finance Rate: ")
+                    + Text("\(payment.financeRate, specifier: "%.2f")%").foregroundStyle(.red)
+//                    Text("• Finance Rate: \(payment.financeRate, specifier: "%.2f")% (\((payment.financeRate * (baseTotal - tradeIn - payment.cashDown), specifier: "%.2f"))")
+
                     
                     Spacer()
                     Spacer()
@@ -100,29 +166,21 @@ struct PaymentTableView: View {
                     
 
                     VStack(alignment: .center, spacing: 0) {
-//                        Text("🧮 Monthly Payment Formula")
-//                            .font(.headline)
-//                            .padding(.bottom, 4)
-//
-//                        // General formula
-//                        Group {
-//                            Text("total × (tax + finance)")
-////                            Text("Monthly =")
-//                            Text("————————————————————————————————")
-//                            Text("term")
-//                        }
-//                        .font(.system(.body, design: .monospaced))
-//                        .multilineTextAlignment(.center)
-//
-//                        Divider().padding(.vertical)
-
-                        // Plugged-in values
                         Group {
-                            Text("(\(formatCurrency(payment.total)) - \(formatCurrency(payment.cashDown)) - \(formatCurrency(tradeIn)))  × (\(100 + payment.taxRate, specifier: "%.2f")% + \(payment.financeRate, specifier: "%.2f")%)")
-                            Text("————————————————————————————————")
-                            Text("\(payment.term)")
+                            Text("(")
+                            + Text("\(formatCurrency(baseTotal)) ").foregroundStyle(.red)
+                            + Text("- ")
+                            + Text("\(formatCurrency(payment.cashDown))").foregroundStyle(.green)
+                            + Text(" - ")
+                            + Text("\(formatCurrency(tradeIn)) ").foregroundStyle(.green)
+                            + Text(") × ")
+                            + Text("(\(100 + payment.taxRate, specifier: "%.2f")% + ")
+                            + Text("\(payment.financeRate, specifier: "%.2f")%").foregroundStyle(.red)
+                            + Text(")")
+                            Text("—————————————————————————————————————————————————")
+                            Text("\(payment.term) months")
                         }
-                        .font(.system(.body, design: .monospaced))
+                        .font(.system(size: 11, design: .monospaced)) // 👈 try 10–13 if it's still too large
                         .multilineTextAlignment(.center)
 
                         Divider().padding(.vertical)
