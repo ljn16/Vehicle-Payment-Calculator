@@ -15,6 +15,7 @@ struct iOSStyledSlider: View {
     var step: Double
     var label: String
     var fillColor: Color = Color.accentColor
+    var valueFormatter: ((Double) -> String)? = nil  // <-- Add this
 
     @State private var initialDragX: CGFloat? = nil
     @State private var initialValue: Double = 0
@@ -40,13 +41,14 @@ struct iOSStyledSlider: View {
                     Text(label)
                         .font(.system(size: 14, weight: .medium, design: .monospaced))
                         .foregroundColor(.white)
-                    Text(formatCurrency(value))
+
+                    // Use the custom formatter if available
+                    Text(valueFormatter?(value) ?? formatCurrency(value))
                         .font(.system(size: 18, weight: .bold, design: .monospaced))
                         .foregroundColor(.white)
                 }
                 .padding(.horizontal, 12)
                 .frame(height: 60, alignment: .leading)
-
             }
             .gesture(
                 DragGesture(minimumDistance: 0)

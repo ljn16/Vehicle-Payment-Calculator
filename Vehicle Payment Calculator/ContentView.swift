@@ -63,7 +63,13 @@ struct ContentView: View {
                                 VStack(spacing: 12) {
                                     iOSStyledSlider(value: $serviceContractCost, range: 0...5000, step: 100, label: "Service Contract Cost")
                                     iOSStyledSlider(value: $gapCost, range: 0...5000, step: 100, label: "GAP Cost")
-                                    iOSStyledSlider(value: $stateTaxRate, range: 0...20, step: 0.125, label: "State Tax Rate")
+                                    iOSStyledSlider(
+                                        value: $stateTaxRate,
+                                        range: 0...7.5,
+                                        step: 0.1,
+                                        label: "State Tax Rate \(stateTaxRate == 6.875 ? "(MN)" : "(Custom)")",
+                                        valueFormatter: { String(format: "%.2f%%", $0) }
+                                    )
                                     iOSStyledSlider(value: $titleLicenseCost, range: 0...2000, step: 50, label: "Title & License")
                                 }
                             }
