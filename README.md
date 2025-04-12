@@ -1,6 +1,8 @@
 Automotive financing -- Calculate a range of monthly payment options.
 Created by an industry professional, this app factors in all the applicable factors for buying a vehicle and shows the break down to demystify the automotive buying process and save you hundreds of dollars.
 
+![Dark Mode Video Preview](<Preview - Dark.gif>)
+
 <table>
     <tr>
         <td align="center">
